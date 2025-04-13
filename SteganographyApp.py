@@ -1,3 +1,8 @@
+#SteganographyApp.py
+#Name: Colton Janes
+#Date: 04/13/2025
+#Assignment: Lab 9
+# ------------------------------------------------------------
 # This app will encode or decode text messages in an image file.
 # The app will use RGB channels so only PNG files will be accepted.
 # This technique will focus on Least Signifigant Bit (LSB) encoding.
@@ -97,29 +102,70 @@ def numberToBinary(num):
   """Takes a base10 number and converts to a binary string with 8 bits"""
   binary = ""
   #Convert from decimal to binary
-
+  while num > 0:
+    binary = str(num % 2) + binary
+    num = num // 2
+    
+  while len(binary) < 8:
+    binary = "0" + binary
 
   return binary
 
 def binaryToNumber(bin):
   """Takes a string binary value and converts it to a base10 integer."""
   decimal = 0
+  value = 1
 
+  while len(bin) > 0:
+    lastSpot = len(bin) - 1
+    lastDigit = bin[lastSpot]
+
+    if lastDigit == '1':
+      decimal = decimal + value
+
+    value = value * 2
+
+    bin = bin[0:lastSpot]
 
   return decimal
 
 def main():
-  #Ask user if they want to encode/decode
-  myImg = Image.open('pki.png')
-  myMsg = "This is a secret message I will hide in an image."
-  encode(myImg, myMsg)
-  myImg.close()
-
-  """
-  yourImg = Image.open('secretImg.png')
-  msg = decode(yourImg)
-  print(msg)
-  """
+  #Ask user if they want to encode/decode, force value to be lowercase
+  option = "" #Default option to encode or decode to be ""
+  while option != "encode" and option != "decode": #Loop input request
+    option = input("Would you like to encode or decode a message? (encode/decode): ").lower()
+    if option != "encode" and option != "decode": #Loops to top
+      print("Oops, Please type 'encode' or 'decode'.")
+  
+  if option == "encode":
+    myImg = Image.open('pki.png') #Going to assume there's only one image to use (the PKI one).
+    myMsg = input("Enter your secret message: ") #Figured it'd be fun to give you a chance to encode.
+    if len(myMsg) == 0: #No secret provided means no secret and that's lame.
+      print("Oops, the secret message to be encoded can't be blank/empty.")
+      return
     
+    encode(myImg, myMsg)
+    myImg.close()
+    print("Your message has been encoded and saved to secretImg.png.")
+
+  elif option == "decode": #if not encode and is decode
+    myImg = Image.open('secretImg.png') #I need to call the secret encoded message
+    msg = decode(myImg)
+    print("Decoded message: ")
+    print(msg)    
+
+  #"""
+  #myImg = Image.open('pki.png')
+  #myMsg = "Here is another secret message hidden in a picture."
+  #encode(myImg, myMsg)
+  #myImg.close()
+  #"""
+  
+  #'''
+  #yourImg = Image.open('secretImg1.png')
+  #msg = decode(yourImg)
+  #print(msg)
+  #'''
+
 if __name__ == '__main__':
   main()
